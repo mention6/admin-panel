@@ -7,8 +7,8 @@ WORKDIR /app
 # 复制 package.json 和 package-lock.json
 COPY package*.json ./
 
-# 安装依赖
-RUN npm install
+# 安装依赖，使用国内镜像源加速
+RUN npm install --registry=https://registry.npmmirror.com
 
 # 复制源代码
 COPY . .

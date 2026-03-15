@@ -4,3 +4,5 @@ dist
 *.log
 .vscode
 .idea
+dist.zip
+miniprogram_npm

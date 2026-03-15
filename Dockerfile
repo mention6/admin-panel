@@ -1,5 +1,5 @@
-# 使用 Node.js 18 作为构建环境
-FROM node:18-alpine as build
+# 使用 Node.js 20 作为构建环境
+FROM node:20-alpine as build
 
 # 设置工作目录
 WORKDIR /app

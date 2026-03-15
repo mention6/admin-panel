@@ -208,48 +208,56 @@
 
 
     <!-- Product Manager Dialog -->
-    <el-dialog v-model="showProductManager" title="商品管理" width="80%">
-        <div style="margin-bottom: 20px;">
-            <el-button type="primary" @click="openAddProduct">新增商品</el-button>
+    <el-dialog v-model="showProductManager" title="商品管理" width="80%" :height="'90vh'" :fullscreen="false">
+        <div style="margin-bottom: 20px; display: flex; align-items: center; gap: 15px;">
+            <el-button type="primary" size="default" @click="openAddProduct" style="padding: 10px 20px;">新增商品</el-button>
+            <el-button type="info" size="default" @click="searchProducts" style="padding: 10px 20px;">搜索商品</el-button>
+            <el-input v-model="searchQuery" placeholder="搜索商品" style="width: 350px; font-size: 16px;" clearable />
         </div>
-        <el-table :data="products" style="width: 100%" height="400">
-             <el-table-column label="图片" width="100">
+        <el-table :data="products" style="width: 100%; font-size: 16px;" height="700" :row-style="{ height: '100px' }">
+             <el-table-column label="图片" width="150">
                  <template #default="scope">
-                     <img :src="scope.row.image || 'https://via.placeholder.com/50?text=No+Img'" 
-                          @error="e => e.target.src = 'https://via.placeholder.com/50?text=Error'"
-                          style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px;">
+                     <img :src="(scope.row.image && scope.row.image.startsWith('http')) ? scope.row.image : (scope.row.image ? 'https://express-zew6-233277-5-1409316354.sh.run.tcloudbase.com' + scope.row.image : 'https://api.dicebear.com/7.x/shapes/svg?seed=NoImage')" 
+                          @error="e => e.target.src = 'https://api.dicebear.com/7.x/shapes/svg?seed=Error'"
+                          style="width: 100px; height: 80px; object-fit: cover; border-radius: 8px;">
                  </template>
              </el-table-column>
-             <el-table-column prop="name" label="商品名称" width="180" />
-             <el-table-column prop="categoryId" label="分类" width="100">
+             <el-table-column prop="name" label="商品名称" width="250">
                  <template #default="scope">
-                     {{ getCategoryName(scope.row.categoryId) }}
+                     <div style="font-weight: 500; font-size: 16px;">{{ scope.row.name }}</div>
                  </template>
              </el-table-column>
-             <el-table-column prop="price" label="价格" width="100">
-                 <template #default="scope">¥{{ scope.row.price }}</template>
-             </el-table-column>
-             <el-table-column prop="stock" label="库存" width="120" />
-             <el-table-column label="操作">
+             <el-table-column prop="categoryId" label="分类" width="150">
                  <template #default="scope">
-                     <el-button size="small" @click="openEditProduct(scope.row)">编辑</el-button>
-                     <el-button size="small" type="danger" @click="deleteProduct(scope.row)">删除</el-button>
+                     <div style="color: #666; font-size: 15px;">{{ getCategoryName(scope.row.categoryId) }}</div>
+                 </template>
+             </el-table-column>
+             <el-table-column prop="price" label="价格" width="150">
+                 <template #default="scope">
+                     <div style="font-weight: bold; color: #E6A23C; font-size: 16px;">¥{{ scope.row.price }}</div>
+                 </template>
+             </el-table-column>
+             <el-table-column prop="stock" label="库存" width="150" />
+             <el-table-column label="操作" width="200">
+                 <template #default="scope">
+                     <el-button size="default" type="primary" @click="openEditProduct(scope.row)" style="margin-right: 15px; padding: 8px 16px;">编辑</el-button>
+                     <el-button size="default" type="danger" @click="deleteProduct(scope.row)" style="padding: 8px 16px;">删除</el-button>
                  </template>
              </el-table-column>
         </el-table>
         <template #footer>
-            <el-button @click="showProductManager = false">关闭</el-button>
+            <el-button size="default" @click="showProductManager = false" style="padding: 8px 16px;">关闭</el-button>
         </template>
     </el-dialog>
 
     <!-- Add/Edit Product Form -->
-    <el-dialog v-model="showProductForm" :title="isEditMode ? '编辑商品' : '新增商品'" width="500px">
-        <el-form label-width="80px">
+    <el-dialog v-model="showProductForm" :title="isEditMode ? '编辑商品' : '新增商品'" width="80%" height="90%">
+        <el-form label-width="120px" label-position="left">
             <el-form-item label="商品名称">
-                <el-input v-model="currentProduct.name"></el-input>
+                <el-input v-model="currentProduct.name" style="width: 100%; font-size: 18px; height: 56px;"></el-input>
             </el-form-item>
             <el-form-item label="分类">
-                <el-select v-model="currentProduct.categoryId" allow-create filterable default-first-option placeholder="选择或输入新分类">
+                <el-select v-model="currentProduct.categoryId" allow-create filterable default-first-option placeholder="选择或输入新分类" style="width: 100%; font-size: 18px; height: 56px;">
                     <el-option label="茶饮" value="tea"></el-option>
                     <el-option label="咖啡" value="coffee"></el-option>
                     <el-option label="酒品" value="alcohol"></el-option>
@@ -257,19 +265,19 @@
                 </el-select>
             </el-form-item>
             <el-form-item label="价格">
-                <el-input-number v-model="currentProduct.price" :min="0" :precision="2"></el-input-number>
+                <el-input-number v-model="currentProduct.price" :min="0" :precision="2" style="width: 100%; font-size: 18px; height: 56px;"></el-input-number>
             </el-form-item>
             <el-form-item label="库存">
-                <el-input-number v-model="currentProduct.stock" :min="0"></el-input-number>
+                <el-input-number v-model="currentProduct.stock" :min="0" style="width: 100%; font-size: 18px; height: 56px;"></el-input-number>
             </el-form-item>
             <el-form-item label="图片">
-                <el-input v-model="currentProduct.image" placeholder="输入URL 或 上传图片"></el-input>
-                <div style="margin-top: 10px;">
-                    <el-button type="primary" size="small" @click="triggerFileInput">选择文件并裁剪</el-button>
+                <el-input v-model="currentProduct.image" placeholder="输入URL 或 上传图片" style="width: 100%; font-size: 18px; height: 56px;"></el-input>
+                <div style="margin-top: 20px;">
+                    <el-button type="primary" size="default" @click="triggerFileInput" style="font-size: 16px; padding: 14px 28px;">选择文件并裁剪</el-button>
                     <input type="file" ref="fileInput" @change="onFileChange" accept="image/*" style="display: none;" />
                 </div>
-                <div v-if="currentProduct.image" style="margin-top: 10px;">
-                    <img :src="currentProduct.image" style="max-width: 100px; max-height: 100px; border-radius: 4px;" />
+                <div v-if="currentProduct.image" style="margin-top: 20px;">
+                    <img :src="currentProduct.image" style="max-width: 300px; max-height: 300px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);" />
                 </div>
             </el-form-item>
             <el-form-item label="规格" v-if="['tea', 'coffee', 'alcohol', 'food'].includes(currentProduct.categoryId)">
@@ -409,8 +417,8 @@
             </el-form-item>
         </el-form>
         <template #footer>
-            <el-button @click="showProductForm = false">取消</el-button>
-            <el-button type="primary" @click="saveProduct">保存</el-button>
+            <el-button size="default" @click="showProductForm = false" style="padding: 10px 20px; margin-right: 15px;">取消</el-button>
+            <el-button type="primary" size="default" @click="saveProduct" style="padding: 10px 20px;">保存</el-button>
         </template>
     </el-dialog>
 
@@ -890,21 +898,23 @@ const uploadCroppedImage = () => {
         formData.append('image', blob, 'cropped.png');
         
         try {
-            const res = await fetch(`${API_BASE_URL}/upload`, {
+            // 直接使用后端服务的完整URL
+            const uploadUrl = 'https://express-zew6-233277-5-1409316354.sh.run.tcloudbase.com/api/upload';
+            const res = await fetch(uploadUrl, {
                 method: 'POST',
                 body: formData
             });
             const data = await res.json();
             if (data.url) {
-                // Return relative path from server
-                currentProduct.value.image = data.url; 
+                // 构建完整的图片URL
+                currentProduct.value.image = 'https://express-zew6-233277-5-1409316354.sh.run.tcloudbase.com' + data.url; 
                 ElMessage.success('上传并裁剪成功');
                 showCropper.value = false;
             } else {
                 ElMessage.error('上传失败: ' + (data.error || '未知错误'));
             }
         } catch (err) {
-            console.error(err);
+            console.error('上传错误:', err);
             ElMessage.error('上传网络错误');
         }
     });
@@ -914,6 +924,13 @@ const saveProduct = async () => {
     try {
         // 将自定义规格数据保存到currentProduct.value.specs中
         currentProduct.value.specs.customSpecs = customSpecs.value;
+        
+        // 确保图片URL使用完整的云托管服务地址
+        if (currentProduct.value.image && !currentProduct.value.image.startsWith('http')) {
+            currentProduct.value.image = 'https://express-zew6-233277-5-1409316354.sh.run.tcloudbase.com' + currentProduct.value.image;
+        }
+        
+        console.log('Saving product:', currentProduct.value);
         
         const url = isEditMode.value 
             ? `${API_BASE_URL}/products/${currentProduct.value.id}` 
@@ -926,13 +943,17 @@ const saveProduct = async () => {
             body: JSON.stringify(currentProduct.value)
         });
         
-        if (!res.ok) throw new Error('Save failed');
+        if (!res.ok) {
+            const errorData = await res.json();
+            throw new Error('Save failed: ' + (errorData.error || 'Unknown error'));
+        }
         
         ElMessage.success('保存成功');
         showProductForm.value = false;
         fetchProducts(); // Refresh list
     } catch (err) {
-        ElMessage.error('保存失败');
+        console.error('Save product error:', err);
+        ElMessage.error('保存失败: ' + err.message);
     }
 }
 
@@ -988,6 +1009,20 @@ const fetchProducts = async () => {
     } catch (err) {
         console.error(err)
     }
+}
+
+const searchProducts = () => {
+    if (!searchQuery.value.trim()) {
+        fetchProducts()
+        return
+    }
+    
+    const query = searchQuery.value.toLowerCase()
+    const filtered = products.value.filter(product => 
+        product.name.toLowerCase().includes(query) ||
+        getCategoryName(product.categoryId).toLowerCase().includes(query)
+    )
+    products.value = filtered
 }
 
 const handleOrder = async (order) => {
